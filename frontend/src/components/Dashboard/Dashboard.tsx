@@ -1,61 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery, ApolloError } from '@apollo/client';
+import React from 'react';
 import { 
   Container, 
   Typography, 
   Box, 
   Paper, 
-  Card, 
-  CardContent,
   CircularProgress,
   Alert,
-  useTheme,
   Grid,
+  useTheme,
+  Card, 
+  CardContent,
   Button
 } from '@mui/material';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import type { ApolloError } from '@apollo/client';
 import LineChart from '../LineChart';
 import Filters from '../Filters';
-import { GET_TIME_SERIES_DATA } from '../../graphql/queries';
-import type { TimeSeriesResponse } from '../../types';
-import { TimeRange, CriticalityLevel } from '../../types';
-
-// Define query variables type
-interface QueryVariables {
-  timeRange: TimeRange;
-  criticalities: CriticalityLevel[] | null;
-}
-
-// No need for styled components, we'll use MUI Grid directly
+import { useDashboardData } from '../../hooks/useDashboardData';
+import SummaryCard from './SummaryCard';
+import ExportButton from './ExportButton';
 
 const Dashboard: React.FC = () => {
   const theme = useTheme();
-  const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>(TimeRange.SEVEN_DAYS);
-  const [selectedCriticalities, setSelectedCriticalities] = useState<CriticalityLevel[]>(
-    Object.values(CriticalityLevel)
-  );
-  const [showCVEs, setShowCVEs] = useState(true);
-  const [showAdvisories, setShowAdvisories] = useState(true);
-
-  const { loading, error, data, refetch } = useQuery<TimeSeriesResponse, QueryVariables>(
-    GET_TIME_SERIES_DATA,
-    {
-      variables: {
-        timeRange: selectedTimeRange,
-        criticalities: selectedCriticalities.length > 0 ? selectedCriticalities : null,
-      },
-    }
-  );
-
-  // Refetch data when filters change
-  useEffect(() => {
-    refetch({
-      timeRange: selectedTimeRange,
-      criticalities: selectedCriticalities.length > 0 ? selectedCriticalities : null,
-    });
-  }, [selectedTimeRange, selectedCriticalities, refetch]);
+  const {
+    loading,
+    error,
+    data,
+    selectedTimeRange,
+    setSelectedTimeRange,
+    selectedCriticalities,
+    setSelectedCriticalities,
+    showCVEs,
+    setShowCVEs,
+    showAdvisories,
+    setShowAdvisories,
+    refetchData 
+  } = useDashboardData();
 
   if (loading) {
     return (
@@ -82,7 +61,7 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  if (!data || !data.timeSeriesData) {
+  if (!data) { // data from useDashboardData is already data.timeSeriesData or undefined
     return (
       <Box sx={{ m: 2 }}>
         <Alert severity="warning">
@@ -92,45 +71,7 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  const { summary } = data.timeSeriesData;
-
-  const formatDelta = (delta: number) => {
-    const formattedValue = Math.abs(delta).toFixed(1);
-    return delta >= 0 ? `+${formattedValue}%` : `-${formattedValue}%`;
-  };
-
-  const getDeltaColor = (delta: number) => {
-    return delta < 0 ? theme.palette.success.main : theme.palette.error.main;
-  };
-
-  const getDeltaIcon = (delta: number) => {
-    return delta < 0 ? (
-      <TrendingDownIcon sx={{ color: theme.palette.success.main }} />
-    ) : (
-      <TrendingUpIcon sx={{ color: theme.palette.error.main }} />
-    );
-  };
-
-  const exportDataAsCSV = () => {
-    if (!data?.timeSeriesData?.dataPoints || data.timeSeriesData.dataPoints.length === 0) return;
-    
-    // Format the date and create CSV content
-    const csvContent = `Date,CVEs,Advisories\n${data.timeSeriesData.dataPoints.map(point => {
-      const date = new Date(point.timestamp).toISOString().split('T')[0];
-      return `${date},${point.cves},${point.advisories}`;
-    }).join('\n')}`;
-    
-    // Create and trigger download
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `security_metrics_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url); // Clean up
-  };
+  const { summary, dataPoints } = data; // data from useDashboardData is already data.timeSeriesData
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
@@ -150,143 +91,35 @@ const Dashboard: React.FC = () => {
       />
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {/* CVEs Summary Card */}
-        <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-          <Card 
-            elevation={3} 
-            sx={{ 
-              height: '100%',
-              borderRadius: 2,
-              transition: 'transform 0.3s ease',
-              '&:hover': {
-                transform: 'translateY(-5px)',
-              },
-            }}
-          >
-            <CardContent>
+        <SummaryCard 
+          title="CVEs" 
+          averageValue={summary.cves.averageValue} 
+          delta={summary.cves.delta} 
+        />
+        <SummaryCard 
+          title="Advisories" 
+          averageValue={summary.advisories.averageValue} 
+          delta={summary.advisories.delta} 
+        />
+        <Grid item xs={12} md={6} lg={3}>
+          <Card elevation={3} sx={{ height: '100%', borderRadius: 2, transition: 'transform 0.3s ease, box-shadow 0.3s ease', '&:hover': { transform: 'translateY(-5px)', boxShadow: theme.shadows[6] }, display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ flexGrow: 1 }}>
               <Typography color="textSecondary" gutterBottom>
-                CVEs
+                Total Alerts
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <Typography variant="h4" component="div">
-                  {Math.round(summary.cves.averageValue)}
-                </Typography>
-                <Box sx={{ ml: 1, display: 'flex', alignItems: 'center' }}>
-                  {getDeltaIcon(summary.cves.delta)}
-                  <Typography 
-                    variant="body2" 
-                    sx={{ color: getDeltaColor(summary.cves.delta) }}
-                  >
-                    {formatDelta(summary.cves.delta)}
-                  </Typography>
-                </Box>
-              </Box>
+              <Typography variant="h4" component="div">
+                {Math.round(summary.cves.averageValue + summary.advisories.averageValue)}
+              </Typography>
               <Typography variant="body2" color="textSecondary">
-                Average over selected period
+                Sum of CVEs & Advisories Average
               </Typography>
             </CardContent>
           </Card>
         </Grid>
-        
-        {/* Advisories Summary Card */}
-        <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-          <Card 
-            elevation={3} 
-            sx={{ 
-              height: '100%',
-              borderRadius: 2,
-              transition: 'transform 0.3s ease',
-              '&:hover': {
-                transform: 'translateY(-5px)',
-              },
-            }}
-          >
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Advisories
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <Typography variant="h4" component="div">
-                  {Math.round(summary.advisories.averageValue)}
-                </Typography>
-                <Box sx={{ ml: 1, display: 'flex', alignItems: 'center' }}>
-                  {getDeltaIcon(summary.advisories.delta)}
-                  <Typography 
-                    variant="body2" 
-                    sx={{ color: getDeltaColor(summary.advisories.delta) }}
-                  >
-                    {formatDelta(summary.advisories.delta)}
-                  </Typography>
-                </Box>
-              </Box>
-              <Typography variant="body2" color="textSecondary">
-                Average over selected period
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        {/* Time Range Card */}
-        <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-          <Card 
-            elevation={3} 
-            sx={{ 
-              height: '100%',
-              borderRadius: 2,
-              transition: 'transform 0.3s ease',
-              '&:hover': {
-                transform: 'translateY(-5px)',
-              },
-            }}
-          >
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Time Range
-              </Typography>
-              <Typography variant="h5" component="div">
-                {selectedTimeRange.replace('_', ' ').toLowerCase()
-                  .split('_')
-                  .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                  .join(' ')}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                {selectedTimeRange === TimeRange.THREE_DAYS ? '3 days' :
-                 selectedTimeRange === TimeRange.SEVEN_DAYS ? '7 days' :
-                 selectedTimeRange === TimeRange.FOURTEEN_DAYS ? '14 days' : '30 days'}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        {/* Criticality Levels Card */}
-        <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-          <Card 
-            elevation={3} 
-            sx={{ 
-              height: '100%',
-              borderRadius: 2,
-              transition: 'transform 0.3s ease',
-              '&:hover': {
-                transform: 'translateY(-5px)',
-              },
-            }}
-          >
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Active Filters
-              </Typography>
-              <Typography variant="h5" component="div">
-                {selectedCriticalities.length} Criticality Levels
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                {selectedCriticalities.length === Object.keys(CriticalityLevel).length 
-                  ? 'All levels selected' 
-                  : selectedCriticalities
-                      .map(c => c.charAt(0) + c.slice(1).toLowerCase())
-                      .join(', ')}
-              </Typography>
-            </CardContent>
-          </Card>
+
+        {/* Grid item for Export Button - simplified and corrected */}
+        <Grid item xs={12} md={12} lg={3} sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
+          <ExportButton dataPoints={dataPoints} />
         </Grid>
       </Grid>
 
@@ -294,6 +127,7 @@ const Dashboard: React.FC = () => {
         <Typography variant="h5" component="h2" sx={{ fontWeight: 500 }}>
           Security Metrics Visualization
         </Typography>
+        {/* The ExportButton component is now used above, so this manual button is removed 
         <Button
           variant="outlined"
           startIcon={<FileDownloadIcon />}
@@ -301,7 +135,7 @@ const Dashboard: React.FC = () => {
           sx={{ textTransform: 'none' }}
         >
           Export Data
-        </Button>
+        </Button>*/}
       </Box>
 
       <Paper 
@@ -361,16 +195,15 @@ const Dashboard: React.FC = () => {
                 <Button 
                   variant="contained" 
                   color="primary" 
-                  size="small" 
-                  sx={{ mt: 2 }}
-                  onClick={() => refetch()}
+                  onClick={() => refetchData()} 
+                  sx={{ mt: 2, textTransform: 'none' }}
                 >
                   Retry
                 </Button>
               </Box>
             </Alert>
           </Box>
-        ) : !data || !data.timeSeriesData || !data.timeSeriesData.dataPoints || data.timeSeriesData.dataPoints.length === 0 ? (
+        ) : !data || !dataPoints || dataPoints.length === 0 ? (
           <Box 
             sx={{ 
               display: 'flex', 
@@ -405,7 +238,7 @@ const Dashboard: React.FC = () => {
         ) : (
           <Box sx={{ height: 'calc(100% - 40px)', width: '100%' }}>
             <LineChart 
-              data={data.timeSeriesData.dataPoints}
+              data={dataPoints}
               showCVEs={showCVEs}
               showAdvisories={showAdvisories}
               height={400}
