@@ -1,17 +1,21 @@
-export enum TimeRange {
-  THREE_DAYS = 'THREE_DAYS',
-  SEVEN_DAYS = 'SEVEN_DAYS',
-  FOURTEEN_DAYS = 'FOURTEEN_DAYS',
-  THIRTY_DAYS = 'THIRTY_DAYS'
-}
+export const TimeRange = {
+  THREE_DAYS: 'THREE_DAYS',
+  SEVEN_DAYS: 'SEVEN_DAYS',
+  FOURTEEN_DAYS: 'FOURTEEN_DAYS',
+  THIRTY_DAYS: 'THIRTY_DAYS'
+} as const;
 
-export enum CriticalityLevel {
-  NONE = 'NONE',
-  LOW = 'LOW',
-  MEDIUM = 'MEDIUM',
-  HIGH = 'HIGH',
-  CRITICAL = 'CRITICAL'
-}
+export type TimeRange = typeof TimeRange[keyof typeof TimeRange];
+
+export const CriticalityLevel = {
+  NONE: 'NONE',
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  CRITICAL: 'CRITICAL'
+} as const;
+
+export type CriticalityLevel = typeof CriticalityLevel[keyof typeof CriticalityLevel];
 
 export interface DataPoint {
   timestamp: string;

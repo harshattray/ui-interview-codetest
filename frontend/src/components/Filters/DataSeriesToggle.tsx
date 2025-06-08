@@ -27,7 +27,7 @@ const DataSeriesToggle: React.FC<DataSeriesToggleProps> = ({
       <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 500 }}>
         Data Series
       </Typography>
-      <Stack direction="row" spacing={1}>
+      <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
         <Chip
           label="CVEs"
           onClick={onToggleCVEs}

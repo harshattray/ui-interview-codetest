@@ -10,8 +10,10 @@ import {
   useTheme,
   Card, 
   CardContent,
-  Button
+  Button,
+  Avatar
 } from '@mui/material';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import type { ApolloError } from '@apollo/client';
 import LineChart from '../LineChart';
 import Filters from '../Filters';
@@ -61,7 +63,7 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  if (!data) { // data from useDashboardData is already data.timeSeriesData or undefined
+  if (!data) {
     return (
       <Box sx={{ m: 2 }}>
         <Alert severity="warning">
@@ -71,13 +73,46 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  const { summary, dataPoints } = data; // data from useDashboardData is already data.timeSeriesData
+  const { summary, dataPoints } = data;
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Security Metrics Dashboard
-      </Typography>
+    <Container maxWidth="lg" sx={{ py: { xs: 3, sm: 5 }, px: { xs: 1, sm: 2, md: 3 } }}>
+      <Box 
+        sx={{ 
+          mb: { xs: 3, sm: 4 },
+          textAlign: 'center',
+          position: 'relative',
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: '-10px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '80px',
+            height: '4px',
+            background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+            borderRadius: '2px',
+          }
+        }}
+      >
+        <Typography 
+          variant="h3" 
+          component="h1" 
+          gutterBottom 
+          sx={{ 
+            fontWeight: 700,
+            fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.5rem' },
+            background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            textFillColor: 'transparent',
+            mb: 1
+          }}
+        >
+          Security Metrics Dashboard
+        </Typography>
+      </Box>
       
       <Filters
         selectedCriticalities={selectedCriticalities}
@@ -90,52 +125,167 @@ const Dashboard: React.FC = () => {
         setShowAdvisories={setShowAdvisories}
       />
 
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <SummaryCard 
-          title="CVEs" 
-          averageValue={summary.cves.averageValue} 
-          delta={summary.cves.delta} 
-        />
-        <SummaryCard 
-          title="Advisories" 
-          averageValue={summary.advisories.averageValue} 
-          delta={summary.advisories.delta} 
-        />
-        <Grid item xs={12} md={6} lg={3}>
-          <Card elevation={3} sx={{ height: '100%', borderRadius: 2, transition: 'transform 0.3s ease, box-shadow 0.3s ease', '&:hover': { transform: 'translateY(-5px)', boxShadow: theme.shadows[6] }, display: 'flex', flexDirection: 'column' }}>
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Typography color="textSecondary" gutterBottom>
-                Total Alerts
-              </Typography>
-              <Typography variant="h4" component="div">
-                {Math.round(summary.cves.averageValue + summary.advisories.averageValue)}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Sum of CVEs & Advisories Average
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+      <Box 
+        sx={{ 
+          mb: { xs: 3, sm: 4 },
+          mt: 4,
+          position: 'relative',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: '-60px',
+            right: '-30px',
+            width: '120px',
+            height: '120px',
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${theme.palette.primary.light}15, ${theme.palette.background.default})`,
+            zIndex: -1,
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: '-40px',
+            left: '-20px',
+            width: '80px',
+            height: '80px',
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${theme.palette.secondary.light}15, ${theme.palette.background.default})`,
+            zIndex: -1,
+          }
+        }}
+      >
+        <Grid container spacing={{ xs: 2, sm: 3 }}>
+          <Grid sx={{ gridColumn: 'span 12', '@media (min-width: 600px)': { gridColumn: 'span 6' }, '@media (min-width: 900px)': { gridColumn: 'span 4' }, '@media (min-width: 1200px)': { gridColumn: 'span 3' }, mb: 2 }}>
+            <SummaryCard 
+              title="CVEs" 
+              averageValue={summary.cves.averageValue} 
+              delta={summary.cves.delta} 
+            />
+          </Grid>
+          <Grid sx={{ gridColumn: 'span 12', '@media (min-width: 600px)': { gridColumn: 'span 6' }, '@media (min-width: 900px)': { gridColumn: 'span 4' }, '@media (min-width: 1200px)': { gridColumn: 'span 3' }, mb: 2 }}>
+            <SummaryCard 
+              title="Advisories" 
+              averageValue={summary.advisories.averageValue} 
+              delta={summary.advisories.delta} 
+            />
+          </Grid>
+          <Grid sx={{ gridColumn: 'span 12', '@media (min-width: 600px)': { gridColumn: 'span 6' }, '@media (min-width: 900px)': { gridColumn: 'span 4' }, '@media (min-width: 1200px)': { gridColumn: 'span 3' }, mb: 2 }}>
+            <Card 
+              elevation={3} 
+              sx={{ 
+                height: '100%', 
+                borderRadius: 2, 
+                transition: 'all 0.3s ease',
+                background: 'linear-gradient(135deg, rgba(76,175,80,0.15) 0%, rgba(76,175,80,0.05) 100%)',
+                position: 'relative',
+                overflow: 'visible',
+                '&:hover': { 
+                  transform: 'translateY(-5px)', 
+                  boxShadow: '0 10px 20px rgba(0,0,0,0.1)' 
+                }, 
+                display: 'flex', 
+                flexDirection: 'column',
+                border: '1px solid',
+                borderColor: 'divider', 
+              }}
+            >
+              <CardContent sx={{ flexGrow: 1, position: 'relative', zIndex: 1, pt: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Avatar
+                    sx={{
+                      bgcolor: theme.palette.background.paper,
+                      width: 40,
+                      height: 40,
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                      mr: 1.5,
+                    }}
+                  >
+                    <AssessmentIcon sx={{ fontSize: 24, color: theme.palette.success.main }} />
+                  </Avatar>
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      fontWeight: 600,
+                      color: theme.palette.text.primary,
+                      letterSpacing: '0.5px',
+                    }}
+                  >
+                    Total Alerts
+                  </Typography>
+                </Box>
+                
+                <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 2 }}>
+                  <Typography 
+                    variant="h3" 
+                    component="div"
+                    sx={{ 
+                      fontWeight: 700, 
+                      letterSpacing: '-0.5px',
+                      color: theme.palette.text.primary,
+                    }}
+                  >
+                    {Math.round(summary.cves.averageValue + summary.advisories.averageValue)}
+                  </Typography>
+                </Box>
+                
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: theme.palette.text.secondary,
+                    fontWeight: 500,
+                    opacity: 0.8,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                  }}
+                >
+                  Sum of CVEs & Advisories Average
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-        {/* Grid item for Export Button - simplified and corrected */}
-        <Grid item xs={12} md={12} lg={3} sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
-          <ExportButton dataPoints={dataPoints} />
+          <Grid sx={{ gridColumn: 'span 12', '@media (min-width: 600px)': { gridColumn: 'span 6' }, '@media (min-width: 900px)': { gridColumn: 'span 12' }, '@media (min-width: 1200px)': { gridColumn: 'span 3' }, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+            <ExportButton dataPoints={dataPoints} />
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 3, mb: 2 }}>
-        <Typography variant="h5" component="h2" sx={{ fontWeight: 500 }}>
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          mt: { xs: 4, sm: 5 }, 
+          mb: { xs: 2, sm: 3 },
+          position: 'relative',
+        }}
+      >
+        <Typography 
+          variant="h5" 
+          component="h2" 
+          sx={{ 
+            fontWeight: 600, 
+            fontSize: { xs: '1.25rem', sm: '1.5rem' },
+            position: 'relative',
+            display: 'inline-block',
+            px: 2,
+            py: 1,
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              width: '100%',
+              height: '8px',
+              backgroundColor: `${theme.palette.primary.main}15`,
+              borderRadius: '4px',
+              zIndex: -1,
+            }
+          }}
+        >
           Security Metrics Visualization
         </Typography>
-        {/* The ExportButton component is now used above, so this manual button is removed 
-        <Button
-          variant="outlined"
-          startIcon={<FileDownloadIcon />}
-          onClick={exportDataAsCSV}
-          sx={{ textTransform: 'none' }}
-        >
-          Export Data
-        </Button>*/}
       </Box>
 
       <Paper 
@@ -144,7 +294,21 @@ const Dashboard: React.FC = () => {
           p: 3, 
           borderRadius: 2,
           height: 500,
-          position: 'relative'
+          position: 'relative',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,242,245,0.95) 100%)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid',
+          borderColor: 'divider',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '4px',
+            background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+          }
         }}
       >
         <Typography variant="h6" gutterBottom>
@@ -241,7 +405,6 @@ const Dashboard: React.FC = () => {
               data={dataPoints}
               showCVEs={showCVEs}
               showAdvisories={showAdvisories}
-              height={400}
             />
           </Box>
         )}

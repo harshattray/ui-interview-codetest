@@ -25,7 +25,7 @@ const CriticalitySelector: React.FC<CriticalitySelectorProps> = ({
       <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 500 }}>
         Criticality Levels
       </Typography>
-      <Stack direction="row" spacing={1}>
+      <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
         {Object.values(CriticalityLevel).map((criticality) => (
           <Chip
             key={criticality}
