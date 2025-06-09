@@ -5,7 +5,8 @@ export default {
   moduleNameMapper: {
     '\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '^d3$': '<rootDir>/src/__mocks__/d3.js',
-    '^d3-(.*)$': '<rootDir>/src/__mocks__/d3.js'
+    '^d3-(.*)$': '<rootDir>/src/__mocks__/d3.js',
+    '^@/(.*)$': '<rootDir>/src/$1'
   },
   transform: {
     '^.+\.(ts|tsx)$': ['ts-jest', {
