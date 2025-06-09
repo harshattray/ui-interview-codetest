@@ -69,70 +69,81 @@ describe('Dashboard', () => {
       error: new Error('Test error'),
     });
     renderComponent();
-    expect(screen.getByText('Error loading data: Test error')).toBeInTheDocument();
+    expect(
+      screen.getByText('Failed to load dashboard data. Please try refreshing the page.')
+    ).toBeInTheDocument();
+    expect(screen.getByText('Test error')).toBeInTheDocument();
   });
 
   test('renders dashboard content when data is loaded', () => {
     renderComponent();
-    
+
     // Check for summary cards - use heading elements to be more specific
     expect(screen.getByRole('heading', { name: 'CVEs' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Advisories' })).toBeInTheDocument();
-    
+
     // Check for filter controls
     expect(screen.getByRole('combobox')).toBeInTheDocument();
-    
+
     // Check for export button
     expect(screen.getByText('EXPORT DATA')).toBeInTheDocument();
   });
 
   test('handles time range selection', () => {
     renderComponent();
-    
+
     // Directly call the mock function to test the handler
     mockUseDashboardData.setSelectedTimeRange(TimeRange.THIRTY_DAYS);
-    
+
     expect(mockUseDashboardData.setSelectedTimeRange).toHaveBeenCalledWith(TimeRange.THIRTY_DAYS);
   });
 
   test('handles criticality selection', () => {
     renderComponent();
-    
+
     // Directly call the mock function to test the handler
     mockUseDashboardData.setSelectedCriticalities([CriticalityLevel.CRITICAL]);
-    
-    expect(mockUseDashboardData.setSelectedCriticalities).toHaveBeenCalledWith([CriticalityLevel.CRITICAL]);
+
+    expect(mockUseDashboardData.setSelectedCriticalities).toHaveBeenCalledWith([
+      CriticalityLevel.CRITICAL,
+    ]);
   });
 
   test('handles CVE visibility toggle', async () => {
     renderComponent();
-    
+
     const user = userEvent.setup();
     const cveChip = screen.getAllByRole('button').find(el => el.textContent === 'CVEs');
-    if (!cveChip) { throw new Error('CVEs chip not found'); }
+    if (!cveChip) {
+      throw new Error('CVEs chip not found');
+    }
     await user.click(cveChip);
-    
+
     expect(mockUseDashboardData.setShowCVEs).toHaveBeenCalledWith(false);
   });
 
   test('handles Advisories visibility toggle', async () => {
     renderComponent();
-    
+
     const user = userEvent.setup();
-    const advisoriesChip = screen.getAllByRole('button').find(el => el.textContent === 'Advisories');
-    if (!advisoriesChip) { throw new Error('Advisories chip not found'); }
+    const advisoriesChip = screen
+      .getAllByRole('button')
+      .find(el => el.textContent === 'Advisories');
+    if (!advisoriesChip) {
+      throw new Error('Advisories chip not found');
+    }
     await user.click(advisoriesChip);
-    
+
     expect(mockUseDashboardData.setShowAdvisories).toHaveBeenCalledWith(false);
   });
 
   test('handles export button click', async () => {
     renderComponent();
-    
+
     const user = userEvent.setup();
     const exportButton = screen.getByText('EXPORT DATA');
     await user.click(exportButton);
-    
+
     // Since we're just testing that the button can be clicked without errors
     // No specific assertion is needed here
     expect(exportButton).toBeInTheDocument();
@@ -140,7 +151,7 @@ describe('Dashboard', () => {
 
   test('renders the correct number of SummaryCards', () => {
     renderComponent();
-    
+
     const cards = document.querySelectorAll('.MuiCard-root');
     expect(cards.length).toBe(3);
   });

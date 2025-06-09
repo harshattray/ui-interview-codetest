@@ -4,7 +4,7 @@ import type { DataPoint } from '../../types';
 
 describe('dashboardUtils', () => {
   const theme = createTheme();
-  
+
   describe('formatDelta', () => {
     it('should format positive delta with plus sign', () => {
       expect(formatDelta(5.5)).toBe('+5.5%');
@@ -41,40 +41,40 @@ describe('dashboardUtils', () => {
     const originalCreateElement = document.createElement;
     const originalAppendChild = document.body.appendChild;
     const originalRemoveChild = document.body.removeChild;
-    
+
     // Mock elements and methods
-    let mockLinkElement: any;
+    let mockLinkElement: { setAttribute: jest.Mock; click: jest.Mock };
     let mockCreateElement: jest.Mock;
     let mockAppendChild: jest.Mock;
     let mockRemoveChild: jest.Mock;
     let mockSetAttribute: jest.Mock;
     let mockClick: jest.Mock;
-    
+
     beforeEach(() => {
       // Create mock element
       mockLinkElement = {
         setAttribute: jest.fn(),
         click: jest.fn(),
       };
-      
+
       // Create mock methods
       mockCreateElement = jest.fn().mockReturnValue(mockLinkElement);
       mockAppendChild = jest.fn();
       mockRemoveChild = jest.fn();
-      
+
       // Replace document methods with mocks
-      document.createElement = mockCreateElement as any;
-      document.body.appendChild = mockAppendChild as any;
-      document.body.removeChild = mockRemoveChild as any;
-      
+      document.createElement = mockCreateElement as unknown as typeof document.createElement;
+      document.body.appendChild = mockAppendChild as unknown as typeof document.body.appendChild;
+      document.body.removeChild = mockRemoveChild as unknown as typeof document.body.removeChild;
+
       // Store references to the mocks for assertions
       mockSetAttribute = mockLinkElement.setAttribute;
       mockClick = mockLinkElement.click;
-      
+
       // Mock alert
       global.alert = jest.fn();
     });
-    
+
     afterEach(() => {
       // Restore original methods
       document.createElement = originalCreateElement;
@@ -89,13 +89,19 @@ describe('dashboardUtils', () => {
         { timestamp: '2023-01-01T00:00:00Z', cves: 10, advisories: 5 },
         { timestamp: '2023-01-02T00:00:00Z', cves: 15, advisories: 8 },
       ];
-      
+
       // Call the function
       exportDataAsCSV(mockData);
 
       expect(mockCreateElement).toHaveBeenCalledWith('a');
-      expect(mockSetAttribute).toHaveBeenCalledWith('download', expect.stringContaining('security_metrics_'));
-      expect(mockSetAttribute).toHaveBeenCalledWith('href', expect.stringContaining('data:text/csv'));
+      expect(mockSetAttribute).toHaveBeenCalledWith(
+        'download',
+        expect.stringContaining('security_metrics_')
+      );
+      expect(mockSetAttribute).toHaveBeenCalledWith(
+        'href',
+        expect.stringContaining('data:text/csv')
+      );
       expect(mockAppendChild).toHaveBeenCalled();
       expect(mockClick).toHaveBeenCalled();
       expect(mockRemoveChild).toHaveBeenCalled();
@@ -103,7 +109,7 @@ describe('dashboardUtils', () => {
 
     it('should not create CSV file if data is empty', () => {
       exportDataAsCSV([]);
-      
+
       expect(mockCreateElement).not.toHaveBeenCalled();
       expect(global.alert).toHaveBeenCalledWith('No data to export.');
     });
@@ -111,7 +117,7 @@ describe('dashboardUtils', () => {
     it('should not create CSV file if data is undefined', () => {
       global.alert = jest.fn();
       exportDataAsCSV(undefined);
-      
+
       expect(mockCreateElement).not.toHaveBeenCalled();
       expect(global.alert).toHaveBeenCalledWith('No data to export.');
     });

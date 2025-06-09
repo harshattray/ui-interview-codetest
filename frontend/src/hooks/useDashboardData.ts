@@ -22,7 +22,9 @@ interface UseDashboardDataReturn {
   setShowCVEs: React.Dispatch<React.SetStateAction<boolean>>;
   showAdvisories: boolean;
   setShowAdvisories: React.Dispatch<React.SetStateAction<boolean>>;
-  refetchData: (variables?: Partial<QueryVariables>) => Promise<ApolloQueryResult<TimeSeriesResponse>>;
+  refetchData: (
+    variables?: Partial<QueryVariables>
+  ) => Promise<ApolloQueryResult<TimeSeriesResponse>>;
 }
 
 export const useDashboardData = (): UseDashboardDataReturn => {
@@ -62,6 +64,6 @@ export const useDashboardData = (): UseDashboardDataReturn => {
     setShowCVEs,
     showAdvisories,
     setShowAdvisories,
-    refetchData: refetch
+    refetchData: refetch,
   };
 };

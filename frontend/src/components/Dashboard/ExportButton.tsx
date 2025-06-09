@@ -11,7 +11,7 @@ interface ExportButtonProps {
 
 const ExportButton: React.FC<ExportButtonProps> = ({ dataPoints, disabled = false }) => {
   const theme = useTheme();
-  
+
   const handleExport = () => {
     if (dataPoints) {
       exportDataAsCSV(dataPoints);
@@ -30,7 +30,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ dataPoints, disabled = fals
         background: 'linear-gradient(135deg, rgba(156,39,176,0.15) 0%, rgba(156,39,176,0.05) 100%)',
         border: '1px solid',
         borderColor: 'divider',
-        p: 2
+        p: 2,
       }}
     >
       <Button
@@ -39,7 +39,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ dataPoints, disabled = fals
         startIcon={<FileDownloadIcon sx={{ fontSize: 20 }} />}
         onClick={handleExport}
         disabled={disabled || !dataPoints || dataPoints.length === 0}
-        sx={{ 
+        sx={{
           py: 1.5,
           px: 3,
           borderRadius: 8,
@@ -60,8 +60,8 @@ const ExportButton: React.FC<ExportButtonProps> = ({ dataPoints, disabled = fals
           '&.Mui-disabled': {
             backgroundColor: theme.palette.action.disabledBackground,
             color: theme.palette.action.disabled,
-            boxShadow: 'none'
-          }
+            boxShadow: 'none',
+          },
         }}
       >
         EXPORT DATA

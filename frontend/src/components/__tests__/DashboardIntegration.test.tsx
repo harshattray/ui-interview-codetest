@@ -1,8 +1,7 @@
-// React is used implicitly by JSX
-import React from 'react';
+// JSX transform handles React import automatically
 import { render, screen, act } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
-import type { MockedResponse } from '@apollo/client/testing';
+// MockedResponse type is not used in this file
 import '@testing-library/jest-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 

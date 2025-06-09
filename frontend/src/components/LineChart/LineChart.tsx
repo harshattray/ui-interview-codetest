@@ -6,7 +6,7 @@ import { useD3LineChart } from '../../hooks/useD3LineChart';
 interface LineChartProps {
   data: DataPoint[];
   initialWidth?: number;
-  initialHeight?: number; 
+  initialHeight?: number;
   margin?: { top: number; right: number; bottom: number; left: number };
   showCVEs?: boolean;
   showAdvisories?: boolean;
@@ -15,7 +15,7 @@ interface LineChartProps {
 const LineChart: React.FC<LineChartProps> = ({
   data,
   initialWidth = 800,
-  initialHeight = 400, 
+  initialHeight = 400,
   margin = { top: 20, right: 20, bottom: 50, left: 40 },
   showCVEs = true,
   showAdvisories = true,
@@ -65,81 +65,84 @@ const LineChart: React.FC<LineChartProps> = ({
   });
 
   return (
-    <Box ref={containerRef} sx={{ 
-      width: '100%', 
-      height: dimensions.height,
-      overflow: 'hidden',
-      position: 'relative',
-      '& svg': {
-        maxWidth: '100%',
-        height: 'auto',
-        filter: 'drop-shadow(0px 2px 3px rgba(0,0,0,0.1))',
-        '& path.line': {
-          strokeWidth: 3,
-          filter: 'drop-shadow(0px 2px 2px rgba(0,0,0,0.1))',
-        },
-        '& .axis': {
-          '& text': {
+    <Box
+      ref={containerRef}
+      sx={{
+        width: '100%',
+        height: dimensions.height,
+        overflow: 'hidden',
+        position: 'relative',
+        '& svg': {
+          maxWidth: '100%',
+          height: 'auto',
+          filter: 'drop-shadow(0px 2px 3px rgba(0,0,0,0.1))',
+          '& path.line': {
+            strokeWidth: 3,
+            filter: 'drop-shadow(0px 2px 2px rgba(0,0,0,0.1))',
+          },
+          '& .axis': {
+            '& text': {
+              fontWeight: 500,
+              fontSize: '0.75rem',
+            },
+            '& line': {
+              stroke: theme.palette.divider,
+            },
+            '& path': {
+              stroke: theme.palette.divider,
+            },
+          },
+          '& .grid line': {
+            stroke: `${theme.palette.divider}`,
+            strokeOpacity: 0.3,
+            strokeDasharray: '3,3',
+          },
+          '& .tooltip': {
+            backgroundColor: theme.palette.background.paper,
+            border: `1px solid ${theme.palette.divider}`,
+            borderRadius: '4px',
+            padding: '8px',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+            fontSize: '0.875rem',
             fontWeight: 500,
-            fontSize: '0.75rem',
+            '& .tooltip-date': {
+              fontWeight: 600,
+              marginBottom: '4px',
+              color: theme.palette.text.primary,
+            },
+            '& .tooltip-value': {
+              display: 'flex',
+              alignItems: 'center',
+              marginTop: '2px',
+              '& .color-dot': {
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                marginRight: '6px',
+              },
+            },
           },
-          '& line': {
-            stroke: theme.palette.divider,
-          },
-          '& path': {
-            stroke: theme.palette.divider,
-          }
-        },
-        '& .grid line': {
-          stroke: `${theme.palette.divider}`,
-          strokeOpacity: 0.3,
-          strokeDasharray: '3,3',
-        },
-        '& .tooltip': {
-          backgroundColor: theme.palette.background.paper,
-          border: `1px solid ${theme.palette.divider}`,
-          borderRadius: '4px',
-          padding: '8px',
-          boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
-          fontSize: '0.875rem',
-          fontWeight: 500,
-          '& .tooltip-date': {
-            fontWeight: 600,
-            marginBottom: '4px',
-            color: theme.palette.text.primary,
-          },
-          '& .tooltip-value': {
-            display: 'flex',
-            alignItems: 'center',
-            marginTop: '2px',
-            '& .color-dot': {
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              marginRight: '6px',
+          '& .legend': {
+            '& text': {
+              fontWeight: 500,
+              fontSize: '0.75rem',
             },
           },
         },
-        '& .legend': {
-          '& text': {
-            fontWeight: 500,
-            fontSize: '0.75rem',
-          },
-        },
-      }
-    }}>
+      }}
+    >
       <svg
         ref={svgRef}
         width={dimensions.width}
         height={dimensions.height}
-        style={{ 
+        style={{
           display: 'block',
           overflow: 'visible',
         }}
       />
-      
+
       {/* Decorative elements */}
-      <Box 
+      <Box
         sx={{
           position: 'absolute',
           top: 10,
@@ -147,12 +150,13 @@ const LineChart: React.FC<LineChartProps> = ({
           width: 60,
           height: 60,
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(33,150,243,0.1) 0%, rgba(33,150,243,0.05) 100%)',
+          background:
+            'linear-gradient(135deg, rgba(33,150,243,0.1) 0%, rgba(33,150,243,0.05) 100%)',
           zIndex: 0,
           opacity: 0.6,
         }}
       />
-      <Box 
+      <Box
         sx={{
           position: 'absolute',
           bottom: 20,

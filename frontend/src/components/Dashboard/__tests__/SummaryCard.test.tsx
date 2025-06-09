@@ -59,7 +59,7 @@ describe('SummaryCard', () => {
     // SecurityIcon should be present for CVEs
     const cveIcon = document.querySelector('svg[data-testid="SecurityIcon"]');
     expect(cveIcon).toBeInTheDocument();
-    
+
     // Test for Advisories
     rerender(
       <ThemeProvider theme={theme}>
@@ -70,7 +70,7 @@ describe('SummaryCard', () => {
     // AnnouncementIcon should be present for Advisories
     const advisoryIcon = document.querySelector('svg[data-testid="AnnouncementIcon"]');
     expect(advisoryIcon).toBeInTheDocument();
-    
+
     // Test for Other title
     rerender(
       <ThemeProvider theme={theme}>

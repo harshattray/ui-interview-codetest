@@ -2,20 +2,20 @@ export const TimeRange = {
   THREE_DAYS: 'THREE_DAYS',
   SEVEN_DAYS: 'SEVEN_DAYS',
   FOURTEEN_DAYS: 'FOURTEEN_DAYS',
-  THIRTY_DAYS: 'THIRTY_DAYS'
+  THIRTY_DAYS: 'THIRTY_DAYS',
 } as const;
 
-export type TimeRange = typeof TimeRange[keyof typeof TimeRange];
+export type TimeRange = (typeof TimeRange)[keyof typeof TimeRange];
 
 export const CriticalityLevel = {
   NONE: 'NONE',
   LOW: 'LOW',
   MEDIUM: 'MEDIUM',
   HIGH: 'HIGH',
-  CRITICAL: 'CRITICAL'
+  CRITICAL: 'CRITICAL',
 } as const;
 
-export type CriticalityLevel = typeof CriticalityLevel[keyof typeof CriticalityLevel];
+export type CriticalityLevel = (typeof CriticalityLevel)[keyof typeof CriticalityLevel];
 
 export interface DataPoint {
   timestamp: string;

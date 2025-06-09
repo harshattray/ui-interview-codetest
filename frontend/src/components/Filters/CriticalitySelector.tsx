@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  FormControl,
-  Typography,
-  Chip,
-  Stack,
-  useTheme,
-} from '@mui/material';
+import { FormControl, Typography, Chip, Stack, useTheme } from '@mui/material';
 import { CriticalityLevel } from '../../types';
 import { getCriticalityColor } from '../../utils/colorUtils';
 
@@ -26,7 +20,7 @@ const CriticalitySelector: React.FC<CriticalitySelectorProps> = ({
         Criticality Levels
       </Typography>
       <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
-        {Object.values(CriticalityLevel).map((criticality) => (
+        {Object.values(CriticalityLevel).map(criticality => (
           <Chip
             key={criticality}
             label={criticality.charAt(0) + criticality.slice(1).toLowerCase()}
@@ -40,7 +34,9 @@ const CriticalitySelector: React.FC<CriticalitySelectorProps> = ({
               borderColor: getCriticalityColor(criticality),
               color: selectedCriticalities.includes(criticality)
                 ? '#fff'
-                : theme.palette.mode === 'dark' ? '#fff' : '#333',
+                : theme.palette.mode === 'dark'
+                  ? '#fff'
+                  : '#333',
               '&:hover': {
                 backgroundColor: selectedCriticalities.includes(criticality)
                   ? getCriticalityColor(criticality)

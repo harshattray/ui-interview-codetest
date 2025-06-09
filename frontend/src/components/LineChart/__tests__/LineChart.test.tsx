@@ -26,12 +26,7 @@ describe('LineChart', () => {
   const renderComponent = (props = {}) => {
     return render(
       <ThemeProvider theme={theme}>
-        <LineChart 
-          data={mockData}
-          initialWidth={800}
-          initialHeight={400}
-          {...props}
-        />
+        <LineChart data={mockData} initialWidth={800} initialHeight={400} {...props} />
       </ThemeProvider>
     );
   };
@@ -47,13 +42,13 @@ describe('LineChart', () => {
       showCVEs: true,
       showAdvisories: false,
     });
-    
+
     // Check if useD3LineChart was called with the expected parameters
     expect(useD3LineChart).toHaveBeenCalled();
-    
+
     // Get the first call arguments
     const callArgs = (useD3LineChart as jest.Mock).mock.calls[0][0];
-    
+
     // Verify individual properties instead of the entire object
     expect(callArgs.data).toEqual(mockData);
     expect(callArgs.showCVEs).toBe(true);
@@ -68,10 +63,10 @@ describe('LineChart', () => {
       initialWidth: 1000,
       initialHeight: 500,
     });
-    
+
     // Verify that useD3LineChart was called
     expect(useD3LineChart).toHaveBeenCalled();
-    
+
     // Get the first call arguments and check the width and height
     const callArgs = (useD3LineChart as jest.Mock).mock.calls[0][0];
     expect(callArgs.width).toBe(1000);
@@ -85,7 +80,7 @@ describe('LineChart', () => {
       showCVEs: undefined,
       showAdvisories: undefined,
     });
-    
+
     expect(useD3LineChart).toHaveBeenCalledWith(
       expect.objectContaining({
         showCVEs: true,

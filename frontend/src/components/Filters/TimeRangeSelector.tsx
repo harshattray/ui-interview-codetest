@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  FormControl,
-  Typography,
-  Select,
-  MenuItem,
-  useTheme,
-} from '@mui/material';
+import { FormControl, Typography, Select, MenuItem, useTheme } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { TimeRange } from '../../types';
 
@@ -33,7 +27,8 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
         size="small"
         sx={{
           '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
+            borderColor:
+              theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
             borderColor: theme.palette.primary.main,

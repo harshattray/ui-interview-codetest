@@ -54,7 +54,8 @@ describe('useD3LineChart', () => {
       })
     );
 
-    expect(d3.select).toHaveBeenCalled();
+    // When data is empty, the hook returns early without calling d3 functions
+    expect(d3.select).not.toHaveBeenCalled();
     expect(d3.scaleTime).not.toHaveBeenCalled();
   });
 
@@ -96,10 +97,7 @@ describe('useD3LineChart', () => {
       })
     );
 
-    expect(d3.max).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.any(Function)
-    );
+    expect(d3.max).toHaveBeenCalledWith(expect.anything(), expect.any(Function));
     expect(d3.line).toHaveBeenCalledTimes(1);
   });
 
@@ -117,30 +115,24 @@ describe('useD3LineChart', () => {
       })
     );
 
-    expect(d3.max).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.any(Function)
-    );
-    
+    expect(d3.max).toHaveBeenCalledWith(expect.anything(), expect.any(Function));
+
     expect(d3.line).toHaveBeenCalledTimes(1);
   });
 
   it('should update chart when dimensions change', () => {
-    const { rerender } = renderHook(
-      (props) => useD3LineChart(props),
-      {
-        initialProps: {
-          data: mockData,
-          svgRef: mockSvgRef,
-          width: 800,
-          height: 400,
-          margin: { top: 20, right: 30, bottom: 50, left: 50 },
-          showCVEs: true,
-          showAdvisories: true,
-          theme,
-        },
-      }
-    );
+    const { rerender } = renderHook(props => useD3LineChart(props), {
+      initialProps: {
+        data: mockData,
+        svgRef: mockSvgRef,
+        width: 800,
+        height: 400,
+        margin: { top: 20, right: 30, bottom: 50, left: 50 },
+        showCVEs: true,
+        showAdvisories: true,
+        theme,
+      },
+    });
 
     // Clear mocks to track new calls
     jest.clearAllMocks();

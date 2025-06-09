@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  useTheme,
-  Avatar
-} from '@mui/material';
+import { Card, CardContent, Typography, Box, useTheme, Avatar } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import SecurityIcon from '@mui/icons-material/Security';
@@ -19,13 +12,9 @@ interface SummaryCardProps {
   delta: number;
 }
 
-const SummaryCard: React.FC<SummaryCardProps> = ({
-  title,
-  averageValue,
-  delta
-}) => {
+const SummaryCard: React.FC<SummaryCardProps> = ({ title, averageValue, delta }) => {
   const theme = useTheme();
-  
+
   const getGradientColors = () => {
     if (title === 'CVEs') {
       return 'linear-gradient(135deg, rgba(244,67,54,0.15) 0%, rgba(244,67,54,0.05) 100%)';
@@ -35,7 +24,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
       return 'linear-gradient(135deg, rgba(76,175,80,0.15) 0%, rgba(76,175,80,0.05) 100%)';
     }
   };
-  
+
   // Get appropriate icon based on title
   const getIcon = () => {
     if (title === 'CVEs') {
@@ -90,9 +79,9 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           >
             {getIcon()}
           </Avatar>
-          <Typography 
-            variant="h6" 
-            sx={{ 
+          <Typography
+            variant="h6"
+            sx={{
               fontWeight: 600,
               color: theme.palette.text.primary,
               letterSpacing: '0.5px',
@@ -101,24 +90,24 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             {title}
           </Typography>
         </Box>
-        
+
         <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 2 }}>
-          <Typography 
-            variant="h3" 
+          <Typography
+            variant="h3"
             component="div"
-            sx={{ 
-              fontWeight: 700, 
+            sx={{
+              fontWeight: 700,
               letterSpacing: '-0.5px',
               color: theme.palette.text.primary,
             }}
           >
             {Math.round(averageValue)}
           </Typography>
-          
-          <Box 
-            sx={{ 
-              ml: 2, 
-              display: 'flex', 
+
+          <Box
+            sx={{
+              ml: 2,
+              display: 'flex',
               alignItems: 'center',
               backgroundColor: theme.palette.background.paper,
               borderRadius: 5,
@@ -130,8 +119,8 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             {getDeltaIcon()}
             <Typography
               variant="body2"
-              sx={{ 
-                color: getDeltaColor(delta, theme), 
+              sx={{
+                color: getDeltaColor(delta, theme),
                 ml: 0.5,
                 fontWeight: 600,
               }}
@@ -140,10 +129,10 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             </Typography>
           </Box>
         </Box>
-        
-        <Typography 
-          variant="body2" 
-          sx={{ 
+
+        <Typography
+          variant="body2"
+          sx={{
             color: theme.palette.text.secondary,
             fontWeight: 500,
             opacity: 0.8,

@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  FormControl,
-  Typography,
-  Chip,
-  Stack,
-  useTheme,
-} from '@mui/material';
+import { FormControl, Typography, Chip, Stack, useTheme } from '@mui/material';
 
 interface DataSeriesToggleProps {
   showCVEs: boolean;

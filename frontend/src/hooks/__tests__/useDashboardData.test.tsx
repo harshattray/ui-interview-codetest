@@ -1,13 +1,12 @@
-import React from 'react';
+// React is used implicitly in the JSX of the wrapper component
 import type { ReactNode } from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import type { MockedResponse } from '@apollo/client/testing';
-import { useDashboardData } from '../../hooks/useDashboardData';
-import '@testing-library/jest-dom';
+import { useDashboardData } from '../useDashboardData';
 import { GET_TIME_SERIES_DATA } from '../../graphql/queries';
+import '@testing-library/jest-dom';
 import { TimeRange, CriticalityLevel } from '../../types';
-// No need to import WrapperProps as we're defining the wrapper inline
 
 // Simple mock data for tests
 const mockTimeSeriesData = {
@@ -21,8 +20,8 @@ const mockTimeSeriesData = {
   dataPoints: [
     { timestamp: '2023-01-01T00:00:00Z', cves: 10, advisories: 5 },
     { timestamp: '2023-01-02T00:00:00Z', cves: 15, advisories: 8 },
-    { timestamp: '2023-01-03T00:00:00Z', cves: 20, advisories: 11 }
-  ]
+    { timestamp: '2023-01-03T00:00:00Z', cves: 20, advisories: 11 },
+  ],
 };
 
 // Create mocks for Apollo Client
@@ -41,7 +40,7 @@ const mocks: MockedResponse<MockData>[] = [
     },
     result: {
       data: {
-        timeSeriesData: mockTimeSeriesData
+        timeSeriesData: mockTimeSeriesData,
       },
     },
   },
@@ -55,7 +54,7 @@ const mocks: MockedResponse<MockData>[] = [
     },
     result: {
       data: {
-        timeSeriesData: mockTimeSeriesData
+        timeSeriesData: mockTimeSeriesData,
       },
     },
   },
@@ -69,7 +68,7 @@ const mocks: MockedResponse<MockData>[] = [
     },
     result: {
       data: {
-        timeSeriesData: mockTimeSeriesData
+        timeSeriesData: mockTimeSeriesData,
       },
     },
   },
@@ -84,7 +83,7 @@ const mocks: MockedResponse<MockData>[] = [
     },
     result: {
       data: {
-        timeSeriesData: mockTimeSeriesData
+        timeSeriesData: mockTimeSeriesData,
       },
     },
   },
@@ -93,22 +92,23 @@ const mocks: MockedResponse<MockData>[] = [
 // Helper function to wait for hook updates
 const waitForHookToUpdate = async (): Promise<void> => {
   await act(async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise<void>(resolve => setTimeout(resolve, 0));
   });
 };
 
-// Define a wrapper component for tests
-const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => (
-  <MockedProvider mocks={mocks as any} addTypename={false}>
-    {children}
-  </MockedProvider>
-);
+const renderUseDashboardDataHook = (customMocks: MockedResponse[] = []) => {
+  const Wrapper = ({ children }: { children: ReactNode }) => (
+    <MockedProvider mocks={customMocks.length > 0 ? customMocks : mocks} addTypename={false}>
+      {children}
+    </MockedProvider>
+  );
+
+  return renderHook(() => useDashboardData(), { wrapper: Wrapper });
+};
 
 describe('useDashboardData', () => {
   it('initializes with loading state', async () => {
-    const { result } = renderHook(() => useDashboardData(), {
-      wrapper: Wrapper,
-    });
+    const { result } = renderUseDashboardDataHook();
 
     // Initial state should be loading
     expect(result.current.loading).toBe(true);
@@ -116,43 +116,64 @@ describe('useDashboardData', () => {
     expect(result.current.data).toBeUndefined();
   });
 
-  it('updates time range selection', async () => {
-    const { result } = renderHook(() => useDashboardData(), {
-      wrapper: Wrapper,
-    });
-    
-    await waitForHookToUpdate();
-    
+  it('should update timeRange when setSelectedTimeRange is called', async () => {
+    const { result } = renderUseDashboardDataHook();
+
+    // Act
     act(() => {
       result.current.setSelectedTimeRange(TimeRange.THIRTY_DAYS);
     });
-    
+
+    // Assert
+    expect(result.current.selectedTimeRange).toBe(TimeRange.THIRTY_DAYS);
+  });
+
+  it('updates time range selection', async () => {
+    const { result } = renderUseDashboardDataHook();
+
     await waitForHookToUpdate();
-    
+
+    act(() => {
+      result.current.setSelectedTimeRange(TimeRange.THIRTY_DAYS);
+    });
+
+    await waitForHookToUpdate();
+
     expect(result.current.selectedTimeRange).toBe(TimeRange.THIRTY_DAYS);
     expect(result.current.data).toBeDefined();
   });
 
-  it('updates criticalities selection', async () => {
-    const { result } = renderHook(() => useDashboardData(), {
-      wrapper: Wrapper,
+  it('should update criticalities when setSelectedCriticalities is called', async () => {
+    const { result } = renderUseDashboardDataHook();
+
+    // Act
+    act(() => {
+      result.current.setSelectedCriticalities([CriticalityLevel.CRITICAL, CriticalityLevel.HIGH]);
     });
-    
+
+    // Assert
+    expect(result.current.selectedCriticalities).toEqual([
+      CriticalityLevel.CRITICAL,
+      CriticalityLevel.HIGH,
+    ]);
+  });
+
+  it('updates criticalities selection', async () => {
+    const { result } = renderUseDashboardDataHook();
+
     await waitForHookToUpdate();
-    
+
     act(() => {
       result.current.setSelectedCriticalities([CriticalityLevel.HIGH]);
     });
-    
+
     await waitForHookToUpdate();
-    
+
     expect(result.current.selectedCriticalities).toEqual([CriticalityLevel.HIGH]);
   });
 
   it('returns data when query completes', async () => {
-    const { result } = renderHook(() => useDashboardData(), {
-      wrapper: Wrapper,
-    });
+    const { result } = renderUseDashboardDataHook();
 
     // Wait for the query to complete
     await waitForHookToUpdate();
@@ -163,38 +184,48 @@ describe('useDashboardData', () => {
     expect(result.current.data).toBeDefined();
   });
 
-  it('toggles CVE visibility', async () => {
-    const { result } = renderHook(() => useDashboardData(), { wrapper: Wrapper });
-    
-    await waitForHookToUpdate();
-    
-    expect(result.current.showCVEs).toBe(true);
-    
+  it('should toggle CVEs visibility when setShowCVEs is called', async () => {
+    const { result } = renderUseDashboardDataHook();
+
+    // Act
     act(() => {
       result.current.setShowCVEs(false);
     });
-    
+
+    // Assert
     expect(result.current.showCVEs).toBe(false);
+
+    // Act again
+    act(() => {
+      result.current.setShowCVEs(true);
+    });
+
+    // Assert again
+    expect(result.current.showCVEs).toBe(true);
   });
 
-  it('toggles advisory visibility', async () => {
-    const { result } = renderHook(() => useDashboardData(), { wrapper: Wrapper });
-    
-    await waitForHookToUpdate();
-    
-    expect(result.current.showAdvisories).toBe(true);
-    
+  it('should toggle Advisories visibility when setShowAdvisories is called', async () => {
+    const { result } = renderUseDashboardDataHook();
+
+    // Act
     act(() => {
       result.current.setShowAdvisories(false);
     });
-    
+
+    // Assert
     expect(result.current.showAdvisories).toBe(false);
+
+    // Act again
+    act(() => {
+      result.current.setShowAdvisories(true);
+    });
+
+    // Assert again
+    expect(result.current.showAdvisories).toBe(true);
   });
 
   it('handles refetch correctly', async () => {
-    const { result } = renderHook(() => useDashboardData(), {
-      wrapper: Wrapper,
-    });
+    const { result } = renderUseDashboardDataHook();
 
     // Wait for the initial query to complete
     await waitForHookToUpdate();
