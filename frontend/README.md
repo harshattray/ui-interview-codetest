@@ -110,3 +110,43 @@ Please ensure all code passes tests and linting before submitting pull requests:
 npm run lint
 npm run test
 ```
+
+## Environment Variables and Configuration
+
+```
+# .env file example
+VITE_API_URL=http://localhost:4000/graphql  # GraphQL API endpoint
+VITE_APP_TITLE=Security Metrics Dashboard    # Application title
+```
+
+## My Approach
+
+For this Security Metrics Dashboard, I took a component-driven approach with a focus on:
+
+1. **Performance Optimization** - Used D3.js with React hooks for efficient rendering of time-series data, implementing data sampling for large datasets and optimized SVG rendering.
+
+2. **Type Safety** - Leveraged TypeScript throughout the application to ensure robust code and prevent runtime errors, particularly with complex data structures from the GraphQL API.
+
+3. **Responsive Design** - Implemented a fully responsive dashboard that adapts to different screen sizes, with special attention to chart resizing and mobile interactions.
+
+4. **Accessibility** - Added ARIA attributes, keyboard navigation support, and screen reader compatibility to ensure the dashboard is accessible to all users.
+
+5. **Error Handling** - Implemented comprehensive error boundaries and graceful fallbacks to ensure the application remains usable even when data fetching fails.
+
+## Challenges and Solutions
+
+1. **TypeScript Integration with D3** - Integrating D3.js with TypeScript presented typing challenges, especially with complex selections and data binding. I solved this by creating custom type definitions and using generics effectively.
+
+2. **Responsive Chart Resizing** - Getting charts to resize smoothly across devices was challenging. I implemented a custom ResizeObserver solution that efficiently recalculates dimensions and redraws only when necessary.
+
+3. **Type Safety in Error Handling** - Encountered TypeScript errors when accessing properties on error objects. I resolved this with proper type assertions and optional chaining to ensure type safety while maintaining good error messages.
+
+## Additional Features and Improvements
+
+1. **Enhanced Tooltips** - Added rich tooltips with percentage changes and trend indicators to provide more context when exploring the data.
+
+2. **Performance Optimizations** - Added memoization for expensive calculations and optimized rendering paths to ensure smooth interactions even on lower-powered devices.
+
+3. **Comprehensive Testing** - Added extensive test coverage for components, hooks, and utilities using Jest and Testing Library with a focus on both unit and integration tests.
+
+4. **Improved Error Visualization** - Enhanced error states with helpful messages and recovery options to guide users when issues occur.
