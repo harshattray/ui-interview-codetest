@@ -463,8 +463,8 @@ export const useD3LineChart = ({
       .attr('aria-labelledby', 'x-axis-label')
       .attr('role', 'graphics-symbol');
 
-    // Add a title and description for screen readers
-    svg.append('title').text('Security Metrics Time Series Chart');
+    // Add accessibility attributes instead of visible title
+    svg.attr('aria-label', 'Security Metrics Time Series Chart');
 
     svg
       .append('desc')
