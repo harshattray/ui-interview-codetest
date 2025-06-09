@@ -327,9 +327,7 @@ const Dashboard: React.FC = () => {
                   overflow: 'auto',
                 }}
               >
-                {error && typeof error === 'object' && 'message' in error
-                  ? error.message
-                  : 'An unknown error occurred'}
+                {(error as { message?: string })?.message || 'An unknown error occurred'}
               </Typography>
             </Alert>
           ) : !dataPoints || dataPoints.length === 0 ? (
